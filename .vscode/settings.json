@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "iostream": "cpp",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "istream": "cpp",
+        "string": "cpp",
+        "vector": "cpp",
+        "xstring": "cpp"
     }
 }
