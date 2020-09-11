@@ -20,7 +20,10 @@ int main(int argc, char *argv[])
     // TO DO
     // Get input from the user for the filename and process all items here
     // After file processed, print menu and wait for user input
+    
+    cout << "Items sold." << endl;
     mb.readFile(filename);
+    cout << "Items remaining in the message board after reading all lines in the file." << endl;
     mb.printItemsRemaining();
 	
 	std::string dmenu = "======Main Menu=====\n"

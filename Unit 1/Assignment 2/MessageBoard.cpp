@@ -20,17 +20,40 @@ void MessageBoard::readFile(string filename)
 
     while(getline(file, line))
     {
-        stringstream ss(line);
-
         int sale;
         string type;
         int price;
 
-        ss >> sale;
-        ss >> type;
-        ss >> price;
-        item newItem{sale,type,price};
+        size_t lineProgress = 0;
+        size_t commaLocation = line.find(',', lineProgress);
+        
+        type = line.substr(lineProgress, commaLocation);
+        lineProgress += commaLocation + 1;
+        commaLocation = line.find(',', lineProgress);
 
+        string temp = line.substr(lineProgress, commaLocation-lineProgress);
+        if(temp == ("for sale"))
+        {
+            sale = -1;
+        }
+        else
+        {
+            sale = 1;
+        }
+
+        lineProgress = commaLocation + 1;
+
+        string t = line.substr(lineProgress);
+        price = stoi(t);
+
+
+        //item newItem{sale,type,price};
+        item newItem;
+        newItem.for_sale = sale;
+        newItem.type = type;
+        newItem.price = price;
+
+       // cout << newItem.type << " " << newItem.for_sale << " " << newItem.price << endl;
 
         checkForMatch(newItem);
     }
@@ -45,17 +68,19 @@ void MessageBoard::checkForMatch(item newItem){
     vector<item>::iterator it;
     
     bool sold = false;
-    for(it = items.begin(); it < items.end() || sold; it++)//stops when item is sold
+    for(it = items.begin(); !sold && it < items.end(); it++)//stops when item is sold
     {
         //verifies only one item is for sale, both items are of the same type, and the buyer can afford the item
-        if(newItem.for_sale != it->for_sale && newItem.type == it->type && newItem.price >= (newItem.for_sale)*(it->price))//for_sale must be -1 if newItem is for sale
+        if(newItem.for_sale != it->for_sale && newItem.type == it->type && ( (newItem.for_sale < 0 && it->price >= newItem.price) || (newItem.for_sale > 0 && newItem.price >= it->price) ) )//for_sale must be -1 if newItem is for sale
         {
             //item sold
             sold = true;
-            items.erase(it);
-
+            
             newItem.price = min(newItem.price, it->price);//makes the price of newItem into the price the item was sold at 
+            items.erase(it); //deletes match
+            
             printItemsSold(newItem);
+
         }
     }
 
@@ -63,13 +88,14 @@ void MessageBoard::checkForMatch(item newItem){
     if(!sold)
     {
         items.push_back(newItem);
+        //cout << newItem.for_sale << endl;//
     }
 }
 
 void MessageBoard::printItemsSold(item it){
     //TO DO
     //print type and price of item matched
-    cout<<it.type<<" "<<it.price<<endl;
+    cout <<it.type<<" "<<it.price<<endl;
 
 
 }
@@ -95,8 +121,12 @@ void MessageBoard::postItemToMessageBoard(string itemType, int price, int forSal
     //TO DO
     //create an item and pass it to checkForMatch to determine if there is a match  
 
+    item newItem;
+    newItem.for_sale = forSale;
+    newItem.type = itemType;
+    newItem.price = price;
 
-    item newItem{forSale,itemType,price};
+    //item newItem{forSale,itemType,price};
 
     checkForMatch(newItem);
 }
