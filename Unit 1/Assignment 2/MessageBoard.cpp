@@ -1,3 +1,10 @@
+/*
+Florian Frick
+Assignment 2
+Hoenigman
+*/
+
+
 #include<sstream>
 #include"MessageBoard.h"
 #include <iostream>
@@ -8,6 +15,7 @@
 #include <algorithm> //min
 
 using namespace std;
+
 // Function to read in the file and populate the items array, return the number of items in the array
 void MessageBoard::readFile(string filename)
 {

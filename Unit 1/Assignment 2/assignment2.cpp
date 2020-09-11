@@ -1,5 +1,7 @@
-/*input
-garageSale.txt
+/*
+Florian Frick
+Assignment 2
+Hoenigman
 */
 
 #include <iostream>
