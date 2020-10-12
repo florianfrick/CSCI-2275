@@ -60,10 +60,10 @@ bool Train::dequeuePassengers()
 
 void Train::removePassengers(std::string carName, int numPassengers)
 {
-    trainCar *temp = engine;
+    trainCar *temp = caboose;
     while(temp != NULL && temp->namePart() != carName)
     {
-        temp = temp->next;
+        temp = temp->previous;
     }
 
     int newOccupancy = temp->occupancy - numPassengers;
@@ -130,7 +130,7 @@ void Train::addCar(std::string n, int c, int o, trainCar *p)
     newTrainCar->previous = p; //set prev
     newTrainCar->next->previous = newTrainCar; //point backwards to new traincar
 
-    cout << "\t Added: " << newTrainCar->name << ":" << newTrainCar->capacity << ":" << newTrainCar->occupancy << endl;
+    cout << "\t Added car " << newTrainCar->name << ":" << newTrainCar->capacity << ":" << newTrainCar->occupancy << endl;
 }
 
 void Train::addPassengers(std::string name, int numPassengers)
@@ -139,6 +139,12 @@ void Train::addPassengers(std::string name, int numPassengers)
     while(temp != NULL && temp->namePart() != name) //temp finds cart to add passengers to
     {
         temp = temp->previous;
+    }
+
+    if(temp == NULL)
+    {
+        cout << "Cart does not exist" << endl;
+        return;
     }
     
     int currentOccupancy = temp->occupancy;
@@ -154,7 +160,6 @@ void Train::addPassengers(std::string name, int numPassengers)
 
         addCar(name, capacity, excessOccupancy, temp);
     }
-    delete temp;
 }
 
 Queue* Train::getQueue()

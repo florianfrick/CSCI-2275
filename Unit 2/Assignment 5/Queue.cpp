@@ -12,10 +12,10 @@ Queue::Queue(int size)
 
 Queue::~Queue()
 {
-    delete cpQueue;
     queueHead = -1;
     queueTail = -1;
     queueCount = 0;
+    delete cpQueue;
 }
 
 bool Queue::enqueue(carPassengers cp)//add passengers to queue
@@ -27,14 +27,14 @@ bool Queue::enqueue(carPassengers cp)//add passengers to queue
     }
     else if(queueIsEmpty())
     {
-        *cpQueue = cp; //adds first item
+        cpQueue[0] = cp; //adds first item
         queueHead = 0;
         queueTail = 0;
         queueCount = 1;
     }
     else if(queueSize-1 == queueTail && queueHead != 0)
     {
-        *cpQueue = cp; //wraps around
+        cpQueue[0] = cp; //wraps around
         queueTail = 0;
         queueCount++;
     }
@@ -44,13 +44,13 @@ bool Queue::enqueue(carPassengers cp)//add passengers to queue
         queueTail++;
         queueCount++;
     }
-    std::cout << cp.carName << " added to queue" << std::endl;
+    std::cout << "\t" << cp.carName << " added to queue" << std::endl;
     return true;
 }
 
 carPassengers Queue::dequeue()//add passengers to train
 {
-    carPassengers removed = *(cpQueue+queueHead);
+    carPassengers removed = cpQueue[queueHead];
     
     if(queueIsEmpty())
     {
@@ -84,19 +84,19 @@ void Queue::printQueue() //probably good for debug
     {
         for(int i = queueHead; i <= queueTail; i++)
         {
-            std::cout << (cpQueue+i)->carName << " " << (cpQueue+i)->passengers << std::endl;
+            std::cout << cpQueue[i].carName << " " << cpQueue[i].passengers << std::endl;
         }
     }
     else
     {
         for(int i = queueHead; i < queueSize; i++)
         {
-            std::cout << (cpQueue+i)->carName << " " << (cpQueue+i)->passengers << std::endl;
+            std::cout << cpQueue[i].carName << " " << cpQueue[i].passengers << std::endl;
         }
         //wraps around
-        for(int i = 0; i < queueTail; i++)
+        for(int i = 0; i <= queueTail; i++)
         {
-            std::cout << (cpQueue+i)->carName << " " << (cpQueue+i)->passengers << std::endl;
+            std::cout << cpQueue[i].carName << " " << cpQueue[i].passengers << std::endl;
         }
     }
 }

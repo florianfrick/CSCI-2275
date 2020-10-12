@@ -23,7 +23,7 @@ int main(int argc, char *argv[]){
     // loop until the end of the file
     while(!tickets.eof()){
         //put menu here
-        	std::string dmenu = "======Main Menu=====\n"
+        	std::string dmenu = "\n======Main Menu=====\n"
 					"1. Enqueue from file\n"
 					"2. Enqueue from user\n"
                     "3. Dequeue\n"
@@ -31,145 +31,135 @@ int main(int argc, char *argv[]){
 					"5. Remove all passengers\n"
 					"6. Print train\n"
 					"7. Print queue\n"
-					
 					"8. Quit";
     
-    int choice;
-    bool exit = false;
-    
-    cout << dmenu << endl;
-    
-    carPassengers *latest;
-    while(cin >> choice) {
-        
-        // flush the newlines and other characters
-        cin.clear();
-        cin.ignore();
-
-        switch (choice) {
-            case 1:
-            {
-                if(latest != NULL && !myTrain.getQueue()->queueIsFull())
-                {
-                    bool success = myTrain.enqueuePassengers(*latest); //add item that couldn't be added before
-                }
-                //enqueue from file
-                //For every line, separates destination and tickets, then adds passengers 
-                string line;
-                while(getline(tickets,line)) //Loops through every line
-                {
-                    cout << "y";
-                    stringstream ss(line);
-                    string partOfLine;
-                    int i = 0;
-                    carPassengers cp;
-                    while(getline(ss, partOfLine, ','))//Separates destination and tickets
-                    {
-                        ss.ignore();
-                        if(i == 0)
-                        {
-                            cp.carName = partOfLine;
-                        }
-                        else
-                        {
-                            cp.passengers = stoi(partOfLine);
-                        }
-                        i++;
-                    }
-                    cout << "x";//x
-                    if(myTrain.getQueue()->queueIsFull())
-                    {
-                        *latest = cp; //keeps track of item that couldn't be added
-                        std::cout << "yo";//x
-                        break;
-                    }
-                    else
-                    {
-                        std::cout << cp.carName << "/" << cp.passengers << std::endl;//x
-                        bool success = myTrain.enqueuePassengers(cp); //adds passengers
-                    }
-                }
-
-                break;
-            }
-            
-            case 2:
-            {
-				//enqueue from user
-                string destination;
-                int passengers;
-                cout << "Where would you like to go?" << endl;
-                cin >> destination;
-                cout << "How many tickets would you like?" << endl;
-                cin >> passengers;
-
-                carPassengers cp;
-                cp.carName = destination;
-                cp.passengers = passengers;
-
-                bool success = myTrain.enqueuePassengers(cp);
-                break;
-            }
-            case 3:
-            {
-                //dequeue
-                bool success = myTrain.dequeuePassengers();
-                //passengers will be added to the train if success = true, that happens in dequeuePassengers
-                break;
-            }
-            case 4:
-            {
-                //remove passengers
-                //ask user for number of passengers and car
-                string carName;
-                int numPassengers;
-                cout << "Enter name of car to remove from?" << endl;
-                cin >> carName;
-                cout << "Enter number of passengers to remove" << endl;
-                cin >> numPassengers;
-
-                myTrain.removePassengers(carName, numPassengers);
-                break;
-            }
-            case 5:
-            {
-                //remove all passengers and delete cars
-                trainCar *temp = myTrain.getEngine()->next;
-                while(temp != myTrain.getCaboose())
-                {
-                    std::cout << "removed: " << temp->name << "\t" << temp->occupancy;
-                    myTrain.removePassengers(temp->namePart(), temp->occupancy);
-                }
-                delete temp;
-                break;
-            }
-            case 6:
-            {
-                myTrain.printTrain();//print train
-                break;
-            }
-            case 7:
-            {
-                myTrain.getQueue()->printQueue();//print queue
-                break;
-            }
-            case 8:
-            {
-                exit = true;
-                break;
-            }
-        }
-        
-        if (exit) {
-            delete latest;
-            break;
-        }
+        int choice;
+        bool exit = false;
         
         cout << dmenu << endl;
+        
+        carPassengers *latest = NULL; //store the ticket that couldn't get added previously due to full queue
+
+        while(cin >> choice) {
+            
+            // flush the newlines and other characters
+            cin.clear();
+            cin.ignore();
+
+            switch (choice) {
+                case 1:
+                {
+                    //enqueue from file
+
+                    if(myTrain.getQueue()->queueIsFull())
+                    {
+                        break;
+                    }
+                    if(latest != NULL && !myTrain.getQueue()->queueIsFull())
+                    {
+                        bool success = myTrain.enqueuePassengers(*latest); //add item that couldn't be added before
+                    }
+                    //For every line, separates destination and tickets, then adds passengers 
+                    string line;
+                    while(!myTrain.getQueue()->queueIsFull() && getline(tickets,line)) //Loops through every line
+                    {
+                        stringstream ss(line);
+                        string partOfLine;
+
+                        int i = 0;
+                        carPassengers cp;
+                        while(getline(ss, partOfLine, ','))//Separates destination and tickets
+                        {
+                            ss.ignore();
+                            if(i == 0)
+                            {
+                                cp.carName = partOfLine;
+                            }
+                            else
+                            {
+                                cp.passengers = stoi(partOfLine);
+                            }
+                            i++;
+                        }
+
+                        bool success = myTrain.enqueuePassengers(cp); //adds passengers
+                    }
+
+                    break;
+                }
+                
+                case 2:
+                {
+                    //enqueue from user
+                    string destination;
+                    int passengers;
+                    cout << "Where would you like to go?" << endl;
+                    cin >> destination;
+                    cout << "How many tickets would you like?" << endl;
+                    cin >> passengers;
+
+                    carPassengers cp;
+                    cp.carName = destination;
+                    cp.passengers = passengers;
+
+                    bool success = myTrain.enqueuePassengers(cp);
+                    break;
+                }
+                case 3:
+                {
+                    //dequeue
+                    bool success = myTrain.dequeuePassengers();
+                    break;
+                }
+                case 4:
+                {
+                    //remove passengers
+                    string carName;
+                    int numPassengers;
+                    cout << "Enter destination to disembark from." << endl; //not a specific cart, ie Oreville not Oreville_1
+                    cin >> carName;
+                    cout << "Enter number of passengers to disembark." << endl;
+                    cin >> numPassengers;
+
+                    myTrain.removePassengers(carName, numPassengers); //removes from cart with same name furthest from engine 
+                    break;
+                }
+                case 5:
+                {
+                    //remove all passengers and delete cars
+                    trainCar *temp = myTrain.getEngine()->next;
+                    while(temp != myTrain.getCaboose())
+                    {
+                        myTrain.removePassengers(temp->namePart(), temp->occupancy);
+                        temp = temp->next;
+                    }
+                    break;
+                }
+                case 6:
+                {
+                    myTrain.printTrain();//print train
+                    break;
+                }
+                case 7:
+                {
+                    myTrain.getQueue()->printQueue();//print queue
+                    break;
+                }
+                case 8:
+                {
+                    exit = true;
+                    break;
+                }
+            }
+            
+            if (exit) {
+                return 0;
+            }
+            
+            cout << dmenu << endl;
+        }
+
+
     }
-
-    
-
-    }    
 
 }
