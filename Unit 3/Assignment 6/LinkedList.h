@@ -1,5 +1,5 @@
 //
-//  BST.h
+//  LL.h
 //  Assignment-6    
 //  CSCI 2275
 //
@@ -9,7 +9,6 @@
 
 #include <string>
 
-
 struct wordNode
 {
     std::string word;
@@ -18,6 +17,7 @@ struct wordNode
     wordNode *previous;
 
     wordNode();
+
     wordNode(std::string in_word, wordNode *n, wordNode *p, int c)
     {
         word = in_word;
@@ -30,14 +30,15 @@ struct wordNode
 class LinkedList
 {
     private:
-        wordNode *head;
+        bool insertWordNode(wordNode *previous, wordNode *newNode);
     public:
         LinkedList();
-        bool insertWord(std::string word);
-        bool insertWordNode(wordNode *newNode);
+        ~LinkedList();
+        int insertWord(std::string word);
         void printLL();
         int countNodes();
         int countTotalWords();
+        wordNode *head;
 };
 
 #endif // LL_H
