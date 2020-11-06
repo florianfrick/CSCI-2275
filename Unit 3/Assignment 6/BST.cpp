@@ -3,7 +3,6 @@
 
 BST::BST()
 {
-    std::cout << "bst made";
 }
 BST:: ~BST()
 {
@@ -163,19 +162,30 @@ void BST::findAlphaRange(std::string word1, std::string word2) //print the words
     }
     else
     {
-        printBSTWithEnds(root, word1, word2);//root, node1?
+        if(word1 < word2)
+        {
+            printRange(root, word1, word2);//root, node1?
+        }
+        else
+        {
+            printRange(root, word2, word1);//root, node1?
+        }
     }
 }
 
-void BST::printBSTWithEnds(BSTNode * node, std::string word1, std::string word2)
+void BST::printRange(BSTNode * node, std::string word1, std::string word2)
 {
-    if(node == NULL || node->word == word1 || node->word == word2)
+    if(node == NULL)
     {
         return;
     }
-    printBSTWithEnds(node->leftChild, word1, word2 );
-    std::cout << node->word << std::endl;
-    printBSTWithEnds(node->rightChild, word1, word2);
+
+    printRange(node->leftChild, word1, word2);
+    if(node->word > word1 && node->word < word2)
+    {
+        std::cout << node->word << std::endl;
+    }
+    printRange(node->rightChild, word1, word2);
 }
 
 void BST::printBST(BSTNode * node)

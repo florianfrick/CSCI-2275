@@ -46,7 +46,7 @@ protected:
     
 private:
     void DestroyRecursive(BSTNode *root);
-    void printBSTWithEnds(BSTNode *node, std::string word1, std::string word2);
+    void printRange(BSTNode *node, std::string word1, std::string word2);
     void printBST(BSTNode * node);
     void printPreOrderBST(BSTNode * node);
     void countBSTNodes(BSTNode *node, int *c);

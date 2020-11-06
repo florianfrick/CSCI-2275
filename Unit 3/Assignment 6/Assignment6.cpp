@@ -115,7 +115,8 @@ int main(int argc, char* argv[])
                     cout << "Word to find range between" << endl;
                     cin >> word1;
                     cin >> word2;
-                    bst->findAlphaRange(word1, word2);
+                    cout << endl;
+                    bst->findAlphaRange(word1, word2); //prints words between the two words
                     break;
                 }
                 case 4:
