@@ -8,13 +8,13 @@
 
 using namespace std;
 
-Graph::Graph()
-{
-}
-Graph::~Graph()
-{
-    //dtor
-}
+// Graph::Graph()
+// {
+// }
+// Graph::~Graph()
+// {
+//     //dtor
+// }
 void Graph::addEdge(string v1, string v2, int weight){
 
     for(int i = 0; i < vertices.size(); i++){
@@ -26,10 +26,12 @@ void Graph::addEdge(string v1, string v2, int weight){
                     av.weight = weight;
                     vertices[i].adj.push_back(av);
                     //another vertex for edge in other direction
+                    /*
                     adjVertex av2;
                     av2.v = &vertices[i];
                     av2.weight = weight;
                     vertices[j].adj.push_back(av2);
+                    */
                 }
             }
         }
@@ -40,17 +42,19 @@ void Graph::addVertex(string n){
     for(int i = 0; i < vertices.size(); i++){
         if(vertices[i].name == n){
             found = true;
-            cout<<vertices[i].name<<" found."<<endl;
+            std::cout<<vertices[i].name<<" found."<<endl;
         }
     }
     if(found == false){
         vertex v;
         v.name = n;
+        v.infected = false;
+        v.groupID = 0;
+        v.visited = false;
         vertices.push_back(v);
 
     }
 }
-
 void Graph::displayEdges()
 {
     for(int i = 0; i < vertices.size(); i++){
@@ -64,6 +68,24 @@ void Graph::displayEdges()
     }
 }
 
+void Graph::displayIDs()
+{
+    std::cout << "\nID Status:" << std::endl;
+    for(vertex v: vertices)
+    {
+        std::cout << v.name << " " << v.groupID << std::endl;
+    }
+    std::cout << std::endl;
+}
+void Graph::displayInfections()
+{
+    std::cout << "\nInfection Status:" << std::endl;
+    for(vertex v: vertices)
+    {
+        std::cout << v.name << (v.infected ? "\tinfected.":"\tnot infected.") << std::endl;        
+    }
+    std::cout << std::endl;
+}
 
 int Graph::isAdjacent(std::string v1, std::string v2)
 {
@@ -94,9 +116,9 @@ int Graph::isAdjacent(std::string v1, std::string v2)
     //     //adds neighbors to stack
     //     for(adjVertex edge: v->adj)
     //     {
-    //         if(edge->v->visited == false)
+    //         if(edge.v->visited == false)
     //         {
-    //             stack.push(edge->v->name);
+    //             stack.push(edge.v->name);
     //         }
     //     }
     // }
@@ -108,6 +130,7 @@ int Graph::isAdjacent(std::string v1, std::string v2)
 
 void Graph::assignGroupID()
 {
+    unvisit();
     int ID = 1;
     while(allVisited() == false)
     {
@@ -123,53 +146,57 @@ void Graph::assignGroupID()
         ID++;
     }
     unvisit();
+    displayIDs();
 }
 
 void Graph::infectAndTrace()
 {
     //randomly infect one person
-    int randIndex = (rand() % vertices.size()) + 1;
-    vertex infected = vertices[randIndex];
-    infected.infected = true;
-
-    cout << "Infected: " << infected.name << "\n Close contacts:" << endl;
+    int randIndex = rand() % vertices.size();
+    vertex *infectedV = &vertices[randIndex];
+    vertices[randIndex].infected = true;
+    std::cout << "Infected: " << infectedV->name << "\nClose contacts:" << endl;
+    
     //print close contacts
-    for(adjVertex e : infected.adj)
+    for(adjVertex e : infectedV->adj)
     {
         if(e.weight > 15)
         {
-            cout << e.v->name << "," << e.weight << endl;
+            std::cout << e.v->name << "," << e.weight << endl;
         }
     }
+    displayInfections();
 }
 
 void Graph::infectAndSpread(double rate)
 {
     //randomly infect one person
     int randIndex = (rand() % vertices.size()) + 1;
-    vertex patient0 = vertices[randIndex];
-    patient0.infected = true;
+    vertex *patient0 = &vertices[randIndex];
+    patient0->infected = true;
+    std::cout << "Infected: " << patient0->name << "\nSpread:" << endl;
 
-    queue<vertex> inQueue;
+    queue<vertex*> inQueue;
     inQueue.push(patient0);
     //infect others, adding new patients to queue
     while(inQueue.empty() == false)
     {
-        vertex v = inQueue.front();
+        vertex *v = inQueue.front();
         inQueue.pop();
 
-        for(adjVertex e : v.adj)
+        for(adjVertex e : v->adj)
         {
-            if(rand() < rate)
+            if( (rand()%100) < rate*100)
             {
-                inQueue.push(*(e.v));
+                inQueue.push(e.v);
                 e.v->infected = true;
-                cout << "Infected: " << e.v->name << " after spending " << e.weight << " minutes with " << v.name << "." << endl;
+                std::cout << "Infected: " << e.v->name << " after spending " << e.weight << " minutes with " << v->name << "." << endl;
             }
         }
 
         rate /= 2;//cut infection rate in half every step away
     }
+    displayInfections();
 }
 
 vertex *Graph::findVertex(std::string name)
@@ -187,16 +214,16 @@ void Graph::DFSLabel(std::string person, int ID)
     vertex *root = findVertex(person);
 
     //adds root to stack
-    stack<string> stack;
-    stack.push(person);
+    stack<vertex*> stack;
+    stack.push(root);
 
     while(!stack.empty())
     {
-        string v1 = stack.top();
+        vertex *v = stack.top();
         stack.pop();
 
-        vertex *v = findVertex(v1);
-        if(v->visited == false)
+        //vertex *v = findVertex(v1);
+        if(!v->visited)
         {
             //sets ID
             v->groupID = ID;
@@ -208,7 +235,7 @@ void Graph::DFSLabel(std::string person, int ID)
         {
             if(edge.v->visited == false)
             {
-                stack.push(edge.v->name);
+                stack.push(edge.v);
             }
         }
     }

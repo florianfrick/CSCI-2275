@@ -1,4 +1,4 @@
-Reci#ifndef GRAPH_H
+#ifndef GRAPH_H
 #define GRAPH_H
 #include<vector>
 #include<iostream>
@@ -32,7 +32,8 @@ class Graph
         void assignGroupID();
         void infectAndTrace();
         void infectAndSpread(double rate);
-        
+        void displayIDs();
+        void displayInfections();
         
     protected:
     private:
