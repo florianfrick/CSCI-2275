@@ -57,9 +57,11 @@ void Graph::addVertex(string n){
 }
 void Graph::displayEdges()
 {
-    for(int i = 0; i < vertices.size(); i++){
+    for(int i = 0; i < vertices.size(); i++)
+    {
         cout<<vertices[i].name<<"-->";
-        for(int j = 0; j < vertices[i].adj.size(); j++){
+        for(int j = 0; j < vertices[i].adj.size(); j++)
+        {
             cout<<vertices[i].adj[j].v->name;
             if (j != vertices[i].adj.size()-1)
                 cout<<"***";
@@ -68,6 +70,7 @@ void Graph::displayEdges()
     }
 }
 
+//Outputs the ID group of everyone
 void Graph::displayIDs()
 {
     std::cout << "\nID Status:" << std::endl;
@@ -77,6 +80,8 @@ void Graph::displayIDs()
     }
     std::cout << std::endl;
 }
+
+//Outputs the infection status of everyone
 void Graph::displayInfections()
 {
     std::cout << "\nInfection Status:" << std::endl;
@@ -87,47 +92,49 @@ void Graph::displayInfections()
     std::cout << std::endl;
 }
 
+//This method is not used
 int Graph::isAdjacent(std::string v1, std::string v2)
 {
-    // vertex *root = findVertex(v1);
+    vertex *root = findVertex(v1);
 
-    // //adds root to stack
-    // stack<string> stack;
-    // stack.push(v1);
+    //adds root to stack
+    stack<string> stack;
+    stack.push(v1);
 
-    // while(!stack.empty())
-    // {
-    //     string v1 = stack.top();
-    //     stack.pop();
+    while(!stack.empty())
+    {
+        string v1 = stack.top();
+        stack.pop();
 
-    //     vertex *v = findVertex(v1);
-    //     if(v->visited == false)
-    //     {
-    //         //determines if current vector has the desired string
-    //         if(v->name == v2)
-    //         {
-    //             unvisit();
-    //             std::cout << "Path found" << std::endl;
-    //             return true;
-    //         }
-    //         v->visited = true;
-    //     }
+        vertex *v = findVertex(v1);
+        if(v->visited == false)
+        {
+            //determines if current vector has the desired string
+            if(v->name == v2)
+            {
+                unvisit();
+                std::cout << "Path found" << std::endl;
+                return true;
+            }
+            v->visited = true;
+        }
 
-    //     //adds neighbors to stack
-    //     for(adjVertex edge: v->adj)
-    //     {
-    //         if(edge.v->visited == false)
-    //         {
-    //             stack.push(edge.v->name);
-    //         }
-    //     }
-    // }
+        //adds neighbors to stack
+        for(adjVertex edge: v->adj)
+        {
+            if(edge.v->visited == false)
+            {
+                stack.push(edge.v->name);
+            }
+        }
+    }
 
-    // unvisit();
-    // std::cout << "Path not found" << std::endl;
+    unvisit();
+    std::cout << "Path not found" << std::endl;
     return false;
 }
 
+//Assigns incrementing groupIDs to all connected individuals by using a Depth First Search algorithm
 void Graph::assignGroupID()
 {
     unvisit();
@@ -149,6 +156,7 @@ void Graph::assignGroupID()
     displayIDs();
 }
 
+//Randomly infects one person and outputs their contacts with more than 15 minutes of contact
 void Graph::infectAndTrace()
 {
     //randomly infect one person
@@ -168,6 +176,7 @@ void Graph::infectAndTrace()
     displayInfections();
 }
 
+//Randomly infects one person and with a given infection rate infects all contacts
 void Graph::infectAndSpread(double rate)
 {
     //randomly infect one person
@@ -199,6 +208,7 @@ void Graph::infectAndSpread(double rate)
     displayInfections();
 }
 
+//Finds vertex of individual with given name
 vertex *Graph::findVertex(std::string name)
 {
     for (int i = 0; i < vertices.size(); i++) {
@@ -209,6 +219,7 @@ vertex *Graph::findVertex(std::string name)
     return NULL;
 }
 
+//Sets group ID of all individuals connected to given person
 void Graph::DFSLabel(std::string person, int ID)
 {
     vertex *root = findVertex(person);
@@ -241,6 +252,7 @@ void Graph::DFSLabel(std::string person, int ID)
     }
 }
 
+//Sets "visited" member variable of every vertex to false
 void Graph::unvisit()
 {
     for(vertex v: vertices)
@@ -249,6 +261,7 @@ void Graph::unvisit()
     }
 }
 
+//Determines if every vertex is visited
 bool Graph::allVisited()
 {
     for(vertex v : vertices)
