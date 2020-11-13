@@ -65,5 +65,21 @@ int main(int argc, const char * argv[]) {
     cout<<count<<" words added to BST"<<endl;
     bst.printPreOrderBST();
     
+    
+
+    //Exam 3 Test Code
+
+    //builds graph
+    bst.buildVerticesFromBST(&g);
+    bst.buildEdgesFromBST(&g);
+
+    //prints graph edges
+    g.displayEdges();
+
+
+    cout<<g.distanceBetweenWords("old", "after")<<endl;
+    cout<<g.distanceBetweenWords("old", "man")<<endl;
+    cout<<g.distanceBetweenWords("fished", "first")<<endl;
+    cout<<g.distanceBetweenWords("fished", "was")<<endl;
     return 0;
 }

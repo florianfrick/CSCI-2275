@@ -26,6 +26,7 @@ class Graph
         void addEdge(std::string v1, std::string v2, int weight);
         void addVertex(std::string name);
         void displayEdges();
+        int distanceBetweenWords(std::string word1, std::string word2);
     protected:
     private:
         //vector<edge> edges;

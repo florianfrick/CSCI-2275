@@ -116,3 +116,64 @@ BSTNode* BST::searchBST(string toFind, int &opCounter) {
     return finder;
 }
 
+
+
+//public functions
+void BST::buildVerticesFromBST(Graph *g)
+{
+    if(!root)
+    {
+        return;
+    }
+    buildVerticesFromBST(root, g);
+}
+void BST::buildEdgesFromBST(Graph *g)
+{
+    if(!root)
+    {
+        return;
+    }
+    buildEdgesFromBST(root, g);
+}
+
+//private functions 
+void BST::buildVerticesFromBST(BSTNode *node, Graph *g)
+{
+    if(!node)
+    {
+        return; //returns if node is null
+    }
+
+    g->addVertex(node->word); //adds node to graph as vertex
+
+    buildVerticesFromBST(node->leftChild, g); //calls function with left child
+    buildVerticesFromBST(node->rightChild, g); //calls function with right child
+    
+}
+void BST::buildEdgesFromBST(BSTNode *node, Graph *g)
+{
+    if(!node)
+    {
+        return; //returns if node is null
+    }
+    
+    //builds edges
+    if(node->leftChild != NULL && node->rightChild != NULL)
+    {
+        g->addEdge(node->leftChild->word, node->rightChild->word, 1); //adds edge between children
+    }
+
+    if(node->leftChild != NULL)
+    {
+        g->addEdge(node->word, node->leftChild->word, 1); //adds edge between left child and this node(parent)
+    }
+
+    if(node->rightChild != NULL)
+    {
+        g->addEdge(node->word, node->rightChild->word, 1); //adds edge between right child and this node(parent)
+    }
+
+
+    buildEdgesFromBST(node->leftChild, g); //calls function with left child
+    buildEdgesFromBST(node->rightChild, g); //calls function with right child
+}

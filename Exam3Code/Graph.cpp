@@ -76,7 +76,9 @@ vertex* Graph::search(string v){
 
 
 vertex* Graph::BFS(string startVal, string endVal){
-    for(int x = 0; x < vertices.size(); x++){
+    for(int x = 0; x < vertices.size(); x++)
+    {
+        //resets visited, distance, parent of every vertex
         vertices[x].visited = false;
         vertices[x].distance = 0;
         vertices[x].parent = nullptr;
@@ -89,18 +91,23 @@ vertex* Graph::BFS(string startVal, string endVal){
     //add v to a queue
     queue<vertex*> q;
     q.push(v);
-    while(!q.empty()){
+    while(!q.empty())
+    {
         vertex *n = q.front(); //front returns a value
         q.pop(); //pop removes from queue
-        for(int x = 0; x < n->adj.size(); x++){
-            if(n->adj[x].v->visited == false){
+        for(int x = 0; x < n->adj.size(); x++)
+        {
+            if(n->adj[x].v->visited == false)
+            {
                 n->adj[x].v->distance = n->distance + 1; //parent distance + 1
-                n->adj[x].v->parent = n;
+                n->adj[x].v->parent = n; //set parent
                 //check if it's what we're looking for
-                if(n->adj[x].v->name == endVal){
+                if(n->adj[x].v->name == endVal)
+                {
                     return n->adj[x].v; 
-
-                }else{
+                }
+                else
+                {
                     n->adj[x].v->visited = true;
                     q.push(n->adj[x].v);
                 }
@@ -108,4 +115,9 @@ vertex* Graph::BFS(string startVal, string endVal){
         }
     }
     return nullptr;
+}
+
+int Graph::distanceBetweenWords(std::string word1, std::string word2)
+{
+    return BFS(word1, word2)->distance;
 }

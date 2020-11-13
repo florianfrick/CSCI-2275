@@ -38,6 +38,8 @@ public:
     void printPreOrderBST();
     int addWordNode(std::string word);
     BSTNode* getRoot();
+    void buildVerticesFromBST(Graph *g);
+    void buildEdgesFromBST(Graph *g);
 protected:
     
 private:
@@ -46,6 +48,8 @@ private:
     void printPreOrderBST(BSTNode * node);
     BSTNode* searchBST(std::string word, int &opCounter); //use this function to find pointer to node in BST        
     BSTNode* root;
+    void buildVerticesFromBST(BSTNode *node, Graph *g);
+    void buildEdgesFromBST(BSTNode *node, Graph *g);
 };
 
 #endif // BST_H
