@@ -34,7 +34,7 @@ class Graph {
         bool isThereAPath(string, string); //todo
         void unvisit(); //todo
         void print();
-        vector BFS(string v1, string v2);
+        void BFS(string v1, string v2);
         void printBFSPath(string v1, string v2);
         bool pathExists(string path[], int length);
 };

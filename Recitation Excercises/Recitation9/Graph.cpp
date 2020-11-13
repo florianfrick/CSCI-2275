@@ -56,12 +56,10 @@ void Graph::print() {
 }
 
 
-vector Graph::BFS(string startVal, string endVal)
+void Graph::BFS(string startVal, string endVal)
 {
-    vertex *v = search(startVal);
+    vertex *v = findVert(startVal);
     v->visited = true;
-    v->distance = 0;
-    v->parent = nullptr;
 
     queue<vertex*> q;
     q.push(v);
@@ -70,26 +68,23 @@ vector Graph::BFS(string startVal, string endVal)
     {
         vertex *n = q.front(); //front returns a value
         q.pop(); //remove from queue
-        for(int x = 0; x < n->adj.size(); x++)
+
+        if(n->visited == false)
         {
-            if(n->adj[x].v->visited == false)
+            //prints vertex
+            std::cout << n->value << std::endl;
+            n->visited = true;
+        }
+
+        //adds neighbors to stack
+        for(edge* edge: v->links)
+        {
+            if(edge->neighbor->visited == false)
             {
-                n->adj[x].v->distance = n->distance+1;//parent distance +1
-                n->adj[x].v->parent = n;
-                //check if its what we're looking for
-                if(n->adj[x].v->name == endVal)
-                {
-                    return n->adj[x].v;
-                }
-                else
-                {
-                    n->adj[x].v->visited = true;
-                    q.push(n->adj[x].v);
-                }
+                q.push(edge->neighbor);
             }
         }
     }
-    return nullptr;
 }
 
 void Graph::printBFSPath(string v1, string v2)
@@ -146,25 +141,37 @@ bool Graph::pathExists(string path[], int length)
 
 
 
-
-
 //recursively traverse down the tree from the given vertex
 //and print it very badly
-void dfsRHelper(vertex *inV) {
+void dfsRHelper(vertex *inV)
+{
     inV->visited = true;
     vertex *temp;
-    for (int i = 0; i < inV->links.size(); i++) {
-        temp = inV->links[i]->neighbor;
-        if (!temp->visited) {
-            cout << temp->value << endl;
-            dfsRHelper(temp);
+    for(edge* edge: inV->links)
+    {
+        if(edge->neighbor->visited == false)
+        {
+            cout << edge->neighbor->value << endl;
+            dfsRHelper(edge->neighbor);
         }
     }
+    // for (int i = 0; i < inV->links.size(); i++)
+    // {
+    //     temp = inV->links[i]->neighbor;
+    //     if (!temp->visited)
+    //     {
+    //         cout << temp->value << endl;
+    //         dfsRHelper(temp);
+    //     }
+    // }
+    
 }
 
-void Graph::dfsR(string value) {
+void Graph::dfsR(string value) 
+{
     vertex *root = findVert(value);
-    if (root != NULL) {
+    if (root != NULL)
+    {
         cout << endl << root->value << endl;
         dfsRHelper(root);
     }
