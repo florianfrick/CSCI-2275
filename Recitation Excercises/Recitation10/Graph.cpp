@@ -83,19 +83,19 @@ void Graph::dijkstra(string src) {
         
         for(edge* e: minNode->links)
         {
-            if(e->neighbor->distance > minNode->distance + e->weight)
+            if(e->neighbor->distance > minNode->distance + e->weight) //if the neighbor's current distance is less than the path through minNode
             {
-                e->neighbor->distance = minNode->distance + e->weight;
+                e->neighbor->distance = minNode->distance + e->weight; //change it
             }
         }
     }
 
     for(vertex *v : vertices)
     {
-        cout << v->value << " is " << v->distance << " away from the source " << src << endl;
+        cout << v->value << " is " << v->distance << " away from the source " << src << endl; //print every node and its distance
     }
 
-    for (vertex *v : vertices)
+    for (vertex *v : vertices)//reset distances/unvisit
     {
         v->distance = INT_MAX;
         v->visited = false;
