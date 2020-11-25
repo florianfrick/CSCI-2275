@@ -42,6 +42,8 @@
         "xutility": "cpp",
         "queue": "cpp",
         "deque": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "chrono": "cpp",
+        "ratio": "cpp"
     }
 }
