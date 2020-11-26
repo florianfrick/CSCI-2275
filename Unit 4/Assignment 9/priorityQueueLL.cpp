@@ -3,6 +3,7 @@
 
 priorityQueueLL::priorityQueueLL()
 {
+    head = NULL;
 }
 priorityQueueLL::~priorityQueueLL()
 {
@@ -16,62 +17,63 @@ priorityQueueLL::~priorityQueueLL()
         current = next;
     }
 }
-bool priorityQueueLL::insertWord(LLNode *obj) //add word to words array in priority order. Returns true if word added
+bool priorityQueueLL::insertWord(std::string name, int priority, int treatment) 
 {
+    /*add word to words array in priority order. Returns true if word added
+    Creates new LLNodes for comparisons
+    Deletes these LLNodes to unallocate memory*/
     if(head == NULL)
     {
         //first item
-        insertLLNode(NULL, obj);
+        LLNode *newNode = new LLNode(name, priority, treatment, NULL, NULL);
+        insertLLNode(NULL, newNode);
         return true;
     }
-    
-    if(obj->priority < head->priority)
+
+    LLNode *newNode = new LLNode(name, priority, treatment, head, NULL);
+    if(LLNode::oneIsSmallerPriority(newNode, head))
     {
         //should be added before head by priority
-        obj->next = head;
-        insertLLNode(NULL, obj);
+        insertLLNode(NULL, newNode);
         return true;
     }
-    else if(obj->priority == head->priority && obj->treatment <= head->treatment)
-    {
-        //should be added before head by treatment
-        obj->next = head;
-        insertLLNode(NULL, obj);
-        return true;
-    }
-
+    delete newNode;
     LLNode *temp = head;
-    bool found = false;
-    while(temp != NULL && !found)
+    while(temp->next != NULL)
     {
-        if(temp->priority >= obj->priority)
+        newNode = new LLNode(name, priority, treatment, temp, temp->previous);
+        if(LLNode::oneIsSmallerPriority(newNode, temp))
         {
-            //found where word should be added
-            found = true;
-            obj->next = temp;
-            obj->previous = temp->previous;
-            insertLLNode(temp->previous, obj);
+            //new object's priority is smaller, and therefore more important than, temp's
+            insertLLNode(temp->previous, newNode);
             return true;
         }
+        temp = temp->next;
+        delete newNode;
 
         //add item to end of the list if necessary
-        if(temp->next == NULL && !found)
+        if(temp->next == NULL)
         {
-            obj->previous = temp;
-            insertLLNode(temp, obj);
+            LLNode *newNode = new LLNode(name, priority, treatment, NULL, temp);
+            insertLLNode(temp, newNode);
             return true;
         }
-
-        temp = temp->next;
     }
     return false;
 }
 
 LLNode* priorityQueueLL::pop()
 {
+    if(head == NULL)
+    {
+        return NULL;
+    }
     LLNode *removed = head;
-    head->next->previous = NULL;
     head = head->next;
+    if(head != NULL)
+    {
+        head->previous = NULL;
+    }
     return removed;
 }
 

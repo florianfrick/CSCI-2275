@@ -11,6 +11,7 @@ struct LLNode
     LLNode *next;
     LLNode *previous;
 
+    //constructor
     LLNode(std::string n, int p, int t, LLNode *nex, LLNode *prev)
     {
         name = n;
@@ -18,6 +19,27 @@ struct LLNode
         treatment = t;
         next = nex;
         previous = prev;
+    }
+
+    //comparison method for two nodes using priority and treatment
+    static bool oneIsSmallerPriority(LLNode *one, LLNode *two)
+    {
+        if(one->priority < two->priority)
+        {
+            return true;
+        }
+        else if(one->priority == two->priority)
+        {
+            if(one->treatment < two->treatment)
+            {
+                return true;
+            }
+            return false;
+        }
+        else
+        {
+            return false;
+        }
     }
 };
 
@@ -28,7 +50,7 @@ class priorityQueueLL
     public:
         priorityQueueLL();
         ~priorityQueueLL();
-        bool insertWord(LLNode *obj);
+        bool insertWord(std::string name, int priority, int treatment);
         LLNode* pop();
         void printLL();
         int countNodes();

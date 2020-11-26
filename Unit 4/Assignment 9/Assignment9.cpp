@@ -10,8 +10,10 @@
 
 using namespace std;
 
-bool readFile(std::string filename, vector<heapItem*> patientData)
+vector<heapItem*> readFile(std::string filename)
 {
+    vector<heapItem*> *patientData = new vector<heapItem*>();
+
     ifstream inStream; // stream for reading in file
     inStream.open(filename); // open the file
 
@@ -19,7 +21,7 @@ bool readFile(std::string filename, vector<heapItem*> patientData)
     if (!inStream)
     {
         cout << "Error: Could not open file for reading" << endl;
-        return false;
+        return *patientData;
     }
     // loop until the end of the file
     int i = 0;
@@ -35,18 +37,18 @@ bool readFile(std::string filename, vector<heapItem*> patientData)
         getline(ss, priority, ',');
         getline(ss, treatment, ',');
 
-        cout << name << " " << priority << " " << treatment << endl;
         heapItem *obj = new heapItem(name, stoi(priority), stoi(treatment)); //create new patient
-        patientData.push_back(obj); //add patient to vector
+        patientData->push_back(obj); //add patient to vector
         i++;
     }
     inStream.close();// close the file
-    return true;
+    return *patientData;
 }
 
-long calculateMean(long times[], int size)
+//calculates mean of array times[]
+long calculateMean(long times[], long size)
 {
-    long total;
+    long total = 0;
     for(int i = 0; i < size; i++)
     {
         total+=times[i];
@@ -54,7 +56,8 @@ long calculateMean(long times[], int size)
     return total/size;
 }
 
-long calculateSD(long times[], const int size, long mean)
+//calculates standard deviation of array times[] using given mean
+long calculateSD(long times[], long size, long mean)
 {
     long *difs = new long[size];
     for(int i = 0; i < size; i++)
@@ -64,91 +67,112 @@ long calculateSD(long times[], const int size, long mean)
     return sqrt(calculateMean(difs, size));
 }
 
-bool buildRemove(vector<heapItem*> patientData, const int size)
+//adds and removes 'size' number of items from my heap PQ 100 times and outputs mean and standard deviation
+bool heapAddRemove(vector<heapItem*> patientData, int size)
 {
     priorityQueueHeap *heap = new priorityQueueHeap(size);
-    priorityQueueLL *ll = new priorityQueueLL();
-    std::priority_queue<heapItem*> *pq;
-
     long *heapTimes = new long[size];
+
+    long startTime = 0;
+    long endTime = 0;
+
+    for(int j = 0; j < 100; j++)
+    {
+        startTime = chrono::duration_cast<std::chrono::microseconds>( chrono::system_clock::now().time_since_epoch() ).count();
+        //adding items
+        for(int i = 0; i < size; i++)
+        {
+            heap->push(patientData[i]);
+        }
+
+        //removing items
+        for(int i = 0; i < size; i++)
+        {
+            heap->pop();
+        }
+
+        endTime = chrono::duration_cast<std::chrono::microseconds>( chrono::system_clock::now().time_since_epoch() ).count();
+        heapTimes[j] = endTime-startTime;
+    }
+
+    long heapMean = calculateMean(heapTimes, 100);
+    long heapSD = calculateSD(heapTimes, 100, heapMean);
+
+    std::cout << "Heap Mean," << heapMean << std::endl;
+    std::cout << "Heap SD," << heapSD << std::endl;
+    std::cout << std::endl;
+    return true;
+}
+
+//adds and removes 'size' number of items from my linked list PQ 100 times and outputs mean and standard deviation
+bool llAddRemove(vector<heapItem*> patientData, int size)
+{
+    priorityQueueLL ll;
     long *llTimes = new long[size];
-    long *pqTimes = new long[size];
+
     long startTime;
     long endTime;
-    //adding items
-    for(int i = 0; i < size; i++)
+
+    for(int j = 0; j < 100; j++)
     {
-        
-
-        startTime = chrono::duration_cast<std::chrono::milliseconds>( chrono::system_clock::now().time_since_epoch() ).count();
-        heap->push(patientData[i]);
-        endTime = chrono::duration_cast<std::chrono::milliseconds>( chrono::system_clock::now().time_since_epoch() ).count();
-        heapTimes[i] = endTime-startTime;
-
-        startTime = chrono::duration_cast<std::chrono::milliseconds>( chrono::system_clock::now().time_since_epoch() ).count();
-        LLNode *obj = new LLNode(patientData[i]->name, patientData[i]->priority, patientData[i]->treatment, NULL, NULL);
-        ll->insertWord(obj);
-        endTime = chrono::duration_cast<std::chrono::milliseconds>( chrono::system_clock::now().time_since_epoch() ).count();
-        llTimes[i] = endTime-startTime;
-
-        startTime = chrono::duration_cast<std::chrono::milliseconds>( chrono::system_clock::now().time_since_epoch() ).count();
-        pq->push(patientData[i]);
-        endTime = chrono::duration_cast<std::chrono::milliseconds>( chrono::system_clock::now().time_since_epoch() ).count();
-        pqTimes[i] = endTime-startTime;
-
-        long heapMean = calculateMean(heapTimes, size);
-        long heapSD = calculateSD(heapTimes, size, heapMean);
-        
-        long llMean = calculateMean(llTimes, size);
-        long llSD = calculateSD(llTimes, size, llMean);
-        
-        long pqMean = calculateMean(pqTimes, size);
-        long pqSD = calculateSD(pqTimes, size, pqMean);
-
-        std::cout << "Size: " << size << "\nAdd Times" << std::endl;
-        std::cout << "Heap Mean\t" << heapMean << std::endl;
-        std::cout << "Heap SD\t" << heapSD << std::endl;
-        std::cout << "LL Mean\t" << llMean << std::endl;
-        std::cout << "LL SD\t" << llSD << std::endl;
-        std::cout << "Built-in Mean\t" << pqMean << std::endl;
-        std::cout << "Built-in SD\t" << pqSD << std::endl;
+        startTime = chrono::duration_cast<std::chrono::microseconds>( chrono::system_clock::now().time_since_epoch() ).count();
+        //adding items
+        for(int i = 0; i < size; i++)
+        {
+            ll.insertWord(patientData[i]->name, patientData[i]->priority, patientData[i]->treatment);
+        }
+        //removing items
+        for(int i = 0; i < size; i++)
+        {
+            LLNode *popped = ll.pop();
+        }
+        endTime = chrono::duration_cast<std::chrono::microseconds>( chrono::system_clock::now().time_since_epoch() ).count();
+        llTimes[j] = endTime-startTime;
     }
 
-    //removing items
-    for(int i = 0; i < size; i++)
+    long llMean = calculateMean(llTimes, 100);
+    long llSD = calculateSD(llTimes, 100, llMean);
+
+    std::cout << "LL Mean," << llMean << std::endl;
+    std::cout << "LL SD," << llSD << std::endl;
+    std::cout << std::endl;
+    return true;
+}
+
+//adds and removes 'size' number of items from the STD PQ 100 times and outputs mean and standard deviation
+bool STDAddRemove(vector<heapItem*> patientData, int size)
+{
+    std::priority_queue<heapItem> stdPQ;
+    long *stdTimes = new long[size];
+    long startTime;
+    long endTime;
+
+    for(int j = 0; j < 100; j++)
     {
-        startTime = chrono::duration_cast<std::chrono::milliseconds>( chrono::system_clock::now().time_since_epoch() ).count();
-        heap->pop();
-        endTime = chrono::duration_cast<std::chrono::milliseconds>( chrono::system_clock::now().time_since_epoch() ).count();
-        heapTimes[i] = endTime-startTime;
+        startTime = chrono::duration_cast<std::chrono::microseconds>( chrono::system_clock::now().time_since_epoch() ).count();
+        //adding items
+        for(int i = 0; i < size; i++)
+        {
+            heapItem currentItem = *patientData[i];
+            stdPQ.push(currentItem);
+        }
+        // removing items
+        for(int i = 0; i < size; i++)
+        {
+            stdPQ.pop();        
+        }
+        endTime = chrono::duration_cast<std::chrono::microseconds>( chrono::system_clock::now().time_since_epoch() ).count();
+        long elapsedTime = endTime-startTime;
+        stdTimes[j] = elapsedTime;
 
-        startTime = chrono::duration_cast<std::chrono::milliseconds>( chrono::system_clock::now().time_since_epoch() ).count();
-        ll->pop();
-        endTime = chrono::duration_cast<std::chrono::milliseconds>( chrono::system_clock::now().time_since_epoch() ).count();
-        llTimes[i] = endTime-startTime;
-
-        startTime = chrono::duration_cast<std::chrono::milliseconds>( chrono::system_clock::now().time_since_epoch() ).count();
-        pq->pop();
-        endTime = chrono::duration_cast<std::chrono::milliseconds>( chrono::system_clock::now().time_since_epoch() ).count();
-        pqTimes[i] = endTime-startTime;
-
-        long heapMean = calculateMean(heapTimes, size);
-        long heapSD = calculateSD(heapTimes, size, heapMean);
-        
-        long llMean = calculateMean(llTimes, size);
-        long llSD = calculateSD(llTimes, size, llMean);
-        
-        long pqMean = calculateMean(pqTimes, size);
-        long pqSD = calculateSD(pqTimes, size, pqMean);
-
-        std::cout << "\nRemove Times" << std::endl;
-        std::cout << "Heap Mean\t" << heapMean << std::endl;
-        std::cout << "Heap SD\t" << heapSD << std::endl;
-        std::cout << "LL Mean\t" << llMean << std::endl;
-        std::cout << "LL SD\t" << llSD << std::endl;
-        std::cout << "Built-in Mean\t" << pqMean << std::endl;
-        std::cout << "Built-in SD\t" << pqSD << std::endl;
     }
+    
+    long stdPQMean = calculateMean(stdTimes, 100);
+    long stdPQSD = calculateSD(stdTimes, 100, stdPQMean);
+
+    std::cout << "Built-in Mean," << stdPQMean << std::endl;
+    std::cout << "Built-in SD," << stdPQSD << std::endl;
+    std::cout << std::endl;
     return true;
 }
 
@@ -162,12 +186,15 @@ int main(int argc, char* argv[])
     }
 
     std::vector<heapItem*> patientData;
-    readFile(argv[1], patientData);
+    patientData = readFile(argv[1]);
 
-    for(int i = 100; i < 880; i+=100)
+    for(int i = 100; i <= 900; i+=100)
     {
-        //adds and removes from each priority queue
-        //buildRemove(patientData, min(i,880));
+        //adds and removes from each priority queue from sizes of 100 to 880
+        std::cout << "Size: " << min(i,880) << std::endl;
+        heapAddRemove(patientData, min(i,880));
+        llAddRemove(patientData,min(i,880));
+        STDAddRemove(patientData, min(i,880));
     }
 
 }

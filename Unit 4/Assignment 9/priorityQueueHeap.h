@@ -4,19 +4,62 @@
 #include<vector>
 #include<iostream>
 
-struct heapItem
+class heapItem
 {
-    std::string name;
-    int priority;
-    int treatment;
+    public:
+        std::string name;
+        int priority;
+        int treatment;
 
-    heapItem(std::string n, int p, int t)
-    {
-        name = n;
-        priority = p;
-        treatment = t;
-    }
+        //constructor
+        heapItem(std::string name, int priority, int treatment)
+            :name(name), priority(priority),treatment(treatment)
+        {}
+
+        //comparison method for two items using priority and treatment
+        static bool oneIsSmallerPriority(heapItem *one, heapItem *two)
+        {
+            if(one->priority < two->priority)
+            {
+                return true;
+            }
+            else if(one->priority == two->priority)
+            {
+                if(one->treatment < two->treatment)
+                {
+                    return true;
+                }
+                return false;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        //overloaded operator< function so that the STD priority queue can use heapItems. Same functionality as oneIsSmallerPriority()
+        bool operator<(const heapItem& two) const
+        {
+            std::cout.flush();
+            if(this->priority < two.priority)
+            {
+                return true;
+            }
+            else if(this->priority == two.priority)
+            {
+                if(this->treatment < two.treatment)
+                {
+                    return true;
+                }
+                return false;
+            }
+            else
+            {
+                return false;
+            }
+        }
 };
+
 
 class priorityQueueHeap
 {
@@ -26,7 +69,7 @@ class priorityQueueHeap
         heapItem* pop();
         void printHeap();
     private:
-        heapItem *heap;
+        heapItem** heap; //array of pointers to heapItems
         int capacity;
         int currentSize;
         void minHeapify(int i);

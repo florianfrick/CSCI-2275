@@ -1,9 +1,11 @@
 #include "priorityQueueHeap.h"
 #include <iostream>
 
-priorityQueueHeap::priorityQueueHeap(int capacity)
+priorityQueueHeap::priorityQueueHeap(int capa)
 {
-    capacity = capacity;
+    capacity = capa;
+    currentSize = 0;
+    heap = new heapItem*[capacity];
 }
 
 //add to heap, then move to correct position
@@ -17,8 +19,8 @@ void priorityQueueHeap::push(heapItem *obj)
     {
         currentSize++;
         int i = currentSize;
-        heap[i] = *obj;
-        while(i > 1 && heap[i/2].priority > heap[i].priority)
+        heap[i] = obj;
+        while(i > 1 && !heapItem::oneIsSmallerPriority(heap[i/2], heap[i]) )
         {
             swap(i,i/2); //swaps indexes
             i /= 2;
@@ -36,10 +38,10 @@ heapItem* priorityQueueHeap::pop()
     if (currentSize == 1)
     {
         currentSize--;
-        return &heap[1];
+        return heap[1];
     }
 
-    heapItem* popVal = &heap[1];
+    heapItem* popVal = heap[1];
     heap[1] = heap[currentSize];
     currentSize--;
     minHeapify(1);
@@ -52,10 +54,10 @@ void priorityQueueHeap::minHeapify(int i)
     int right = 2*i+1;
     int smallest = i;
     //sorts by priority and treatment
-    if(left <= currentSize && (heap[left].priority < heap[i].priority || (heap[left].priority == heap[i].priority && heap[left].treatment < heap[i].treatment)))
+    if(left <= currentSize && heapItem::oneIsSmallerPriority(heap[left], heap[smallest]))
         smallest = left;
 
-    if(right <= currentSize && (heap[right].priority < heap[smallest].priority || (heap[right].priority == heap[smallest].priority && heap[right].treatment < heap[smallest].treatment)))
+    if(right <= currentSize && heapItem::oneIsSmallerPriority(heap[right], heap[smallest]))
         smallest = right;
 
     if(smallest != i)
@@ -67,7 +69,7 @@ void priorityQueueHeap::minHeapify(int i)
 
 void priorityQueueHeap::swap(int one, int two)
 {
-    heapItem* temp = &heap[one];
+    heapItem* temp = heap[one];
     heap[one] = heap[two];
-    heap[two] = *temp;
+    heap[two] = temp;
 }
